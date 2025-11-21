@@ -1,0 +1,92 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Listing: {{listing.title}}</h2>
+
+    {% if not listing.is_active %}
+        <div class="alert alert-success" role="alert">
+            <h3 class="alert-heading">This auction is closed</h3> 
+            {% if listing.winner %}
+                <p> Auction winner: {{listing.winner.username}}</p>
+            {% else %}
+                <p> No winner. No bids were placed </p>
+            {% endif %}
+        </div>
+
+    {% endif %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm d-flex h-150">
+                    <img src="{{ listing.image_url}}" class=" card-img-top fixed-image" alt="image">
+                    <div class="card-body flex-grow-1">
+                        <h3 class="card-title text-center">{{listing.title}}</h3>
+                        <h6 class=" text-primary">CURRENT PRICE: $</b>{{listing.current_bid}}</h6>
+                    </div>
+               </div>     
+            </div>
+        
+            <div class="col-md-6 mb-4">
+                {% if listing.is_active %}
+                    <h3>Place Bid</h3>
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">{{error}}</div>
+                    {% endif %} 
+                    <form action="{% url 'place_bid' listing.id %}" method="post">
+                        {% csrf_token %}
+                        <p>{{ form1 }} <button type="submit" class="btn btn-primary" name="bid_amount">Place Bid</button></p>
+                    </form> 
+                    <div>
+                        <h3> Recent Bids</h3>
+                        {% if Bids %}
+                            <ul>
+                                {% for bid in Bids %}
+                                    <li>{{bid.bidder}} bids {{bid.amount}}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p> No Bids yet</p>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <form action="{% url 'place_bid' listing.id %}" method="post">
+                            {% csrf_token %}
+                            {{ form2.as_p }}
+                            <button type="submit" class="btn btn-primary" name="add_comment" > Add Comment</button>
+                        </form>
+                    </div>
+                    <p></p>
+                {% endif %}    
+                <h3> Comments </h3>
+                {% if error %}
+                    <p> {{ error}}</p>
+                {% endif %}
+                    
+                <ul>
+                    {% for comment in Comments %}
+                        <li>{{comment.comment}}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <form method="post" action="{% url 'add_watchlist' listing.id %}">
+            {% csrf_token %}
+            {% if listing in user.watchlist.all %}
+                <button type="submit" class="btn btn-danger"> Remove from watchlist</button>
+            {% else %}  
+                <button type="submit" class="btn btn-secondary">Add to watchlist</button>
+            {% endif %}
+            </form>
+
+            <div class="mx-4">
+                {% if user == listing.createdby and listing.is_active %}
+                    <form method="post", action="{% url 'close_auction' listing.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger"> Close Auction</button>
+                    </form>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+    <h2> My Listings</h2>
+
+    {% if listings %}
+        <ul>
+            {% for listing in listings %}
+                <li>
+                    <a href="{% url 'place_bid' listing.id %}">{{listing.title}}</a>
+                    {% if listing.is_active %}
+                        <p> Active </p>
+                    {% else %}
+                        <p> Closed </p>
+                        {% if listing.winner %}
+                            <p> Winner: {{listing.winner.username}} </p>
+                        {% else %}
+                            <p> No winner. </p>
+                        {% endif %}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No Listing</p>
+    {% endif %}
+
+
+{% endblock %}

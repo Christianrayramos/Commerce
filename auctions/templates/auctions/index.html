@@ -1,0 +1,28 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h2 class="mb-4 text-center" >Active Listings</h2>
+
+        <div class="row">
+            {% for list in Listings %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm d-flex flex-column h-100">
+                        <img src="{{ list.image_url}}" class="card-img-top img-fluid fixed-image" alt="image">
+                        <div class="card-body flex-grow-1" >
+                            <h6 class="card-title"> {{list.title}}</h6>
+                            <p class="card-text">{{ list.description }}</p>
+                            <h6 class="text-primary">${{list.starting_bid}}</h6>
+                            
+                            <div class="card-footer bg-white">
+                                <a href="{% url 'place_bid' list.id %}" class="btn btn-primary btn-sm"> View {{list.title}}</a>        
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %} 
+
+ 
